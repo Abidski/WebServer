@@ -5,42 +5,39 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Remoting.Contexts;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace WebServer
 {
-    internal class ServerSocket
+    public class ServerSocket
     {
         const int port = 3000;
 
         public static async void StartServer()
         {
-            // Get ip of local machine
-            var hostName = Dns.GetHostName();
-            IPHostEntry localhost = await Dns.GetHostEntryAsync(hostName);
-            IPAddress localIpAddress = localhost.AddressList[0];
-
-            // Create end point that connects port localhost to port 3000
+            IPAddress localIpAddress = IPAddress.Parse("127.0.0.1");
             IPEndPoint endPoint = new IPEndPoint(localIpAddress, port);
-
-            // Create tcp socket 
-            Socket _socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-
-            // Binds the socket to the endpoint
-            _socket.Bind(endPoint);
-
-            // Allow socket to listen to connection
-            _socket.Listen(100);
-
-            // Display socket info
-            Console.WriteLine("hostname: " + hostName + "\nport: " + port);
-
-            // Accepts incoming socket connection
-            var handler = await _socket.AcceptAsync();
-
+            Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.Bind(endPoint);
+            socket.Listen(100);
+            Console.WriteLine("IP: " + localIpAddress.ToString() + "\nPort: " + port);
+            var handler = await socket.AcceptAsync();
             while (true)
             {
-                Console.WriteLine("Connected");
+                var buffer = new byte[1024];
+                var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
+                var received = await handler.ReceiveAsync(arr, SocketFlags.None);
+                var request = Encoding.UTF8.GetString(buffer, 0, received);
+                Console.WriteLine(request);
+
+          
+                
+
             }
+
         }
+
     }
 }
