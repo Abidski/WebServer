@@ -12,7 +12,7 @@ namespace WebServer
         static void Main(string[] args)
         {
             
-                ServerSocket.StartServer();
+            ServerSocket.StartServer();
             while (true) { }
         }
     }

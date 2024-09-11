@@ -15,29 +15,48 @@ namespace WebServer
     {
         const int port = 3000;
 
-        public static async void StartServer()
+        public static void StartServer()
+        {
+            CreateServer();
+        }
+
+        private async static Task CreateServer()
         {
             IPAddress localIpAddress = IPAddress.Parse("127.0.0.1");
             IPEndPoint endPoint = new IPEndPoint(localIpAddress, port);
+            var socket = InitializeSocket(localIpAddress, endPoint);
+            var handler = await ConnectSocket(socket);
+            await HandleRequest(handler);
+        }
+
+        private static Socket InitializeSocket(IPAddress localIpAddress, IPEndPoint endPoint)
+        {
             Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             socket.Bind(endPoint);
             socket.Listen(100);
             Console.WriteLine("IP: " + localIpAddress.ToString() + "\nPort: " + port);
+            return socket;
+        }
+
+        private async static Task<Socket> ConnectSocket(Socket socket)
+        {
             var handler = await socket.AcceptAsync();
-            while (true)
-            {
-                var buffer = new byte[1024];
-                var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
-                var received = await handler.ReceiveAsync(arr, SocketFlags.None);
-                var request = Encoding.UTF8.GetString(buffer, 0, received);
-                Console.WriteLine(request);
+            return handler;
+        }
 
-          
-                
+        public async static Task HandleRequest(Socket handler)
+        {
 
-            }
+            var buffer = new byte[1024];
+            var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
+            var received = await handler.ReceiveAsync(arr, SocketFlags.None);
+            var request = Encoding.UTF8.GetString(buffer, 0, received);
+            Console.WriteLine(request);
 
         }
 
+
+
+
     }
-}
+    }
