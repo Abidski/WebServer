@@ -11,7 +11,6 @@ namespace WebServer
     {
         static void Main(string[] args)
         {
-            
             ServerSocket.StartServer();
             while (true) { }
         }

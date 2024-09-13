@@ -5,9 +5,13 @@ using System.Net.Sockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 using System.Runtime.Remoting.Contexts;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.Security.AccessControl;
+using System.Threading;
+using System.Net.Http;
 
 namespace WebServer
 {
@@ -27,7 +31,10 @@ namespace WebServer
             var socket = InitializeSocket(localIpAddress, endPoint);
             var handler = await ConnectSocket(socket);
             await HandleRequest(handler);
+            await SendResponse(handler);
         }
+
+
 
         private static Socket InitializeSocket(IPAddress localIpAddress, IPEndPoint endPoint)
         {
@@ -55,8 +62,12 @@ namespace WebServer
 
         }
 
-
-
-
+        private async static Task SendResponse(Socket handler)
+        {
+            var message = "Hello world";
+            var encodeMessage = Encoding.UTF8.GetBytes(message);
+            await Task.Run (()=> handler.Send(encodeMessage));
+            Console.WriteLine("message sent");
+        }
     }
-    }
+}
