@@ -18,7 +18,7 @@ namespace WebServer
     public class ServerSocket
     {
         const int port = 3000;
-
+      
         public static void StartServer()
         {
             CreateServer();
@@ -32,6 +32,8 @@ namespace WebServer
             var handler = await ConnectSocket(socket);
             await HandleRequest(handler);
             await SendResponse(handler);
+            handler.Close();
+            socket.Close();
         }
 
 
@@ -58,8 +60,7 @@ namespace WebServer
             var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
             var received = await handler.ReceiveAsync(arr, SocketFlags.None);
             var request = Encoding.UTF8.GetString(buffer, 0, received);
-            Console.WriteLine(request);
-
+            new RequestHandler(request);
         }
 
         private async static Task SendResponse(Socket handler)
