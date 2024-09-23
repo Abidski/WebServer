@@ -38,7 +38,7 @@ namespace WebServer
 
         public void Get(Request request, Socket handler)
         {
-            handler.SendFileAsync("C:\\Users\\Abid\\source\\repos\\WebServer\\WebServer\\Website\\index.html");
+            handler.SendFileAsync(path + "index.html");
         }
     }
 }
