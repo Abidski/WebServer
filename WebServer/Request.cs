@@ -8,23 +8,24 @@ using System.Threading.Tasks;
 
 namespace WebServer
 {
-    internal class RequestHandler
+    internal class Request
     {
 
-        string[] requests = new string[0];
-        string method;
-        string uri;
-        string version;
-        string host;
+        public string[] requests = new string[0];
+        public string method { get; set; }
+        public string uri { get; set; }
+        public string version { get; set; }
+        public string host { get; set; }
+        public string header { get; set; }
+        public string body { get; set; }
         
-        public RequestHandler(string request)
+        public Request(string request)
         {
             this.ParseRequest(request);
         }
 
         public void ParseRequest(string request)
         {
-            Console.WriteLine("isinde request handler");
             requests = request.Split(' ');
             this.ExtractInfo();
         }
@@ -42,7 +43,5 @@ namespace WebServer
         {
             return ("Method: " + method + "\nUri: " + uri + "\nVersion: " + version + host);
         }
-
-
     }
 }

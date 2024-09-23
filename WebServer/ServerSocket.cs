@@ -31,7 +31,6 @@ namespace WebServer
             var socket = InitializeSocket(localIpAddress, endPoint);
             var handler = await ConnectSocket(socket);
             await HandleRequest(handler);
-            await SendResponse(handler);
             handler.Close();
             socket.Close();
         }
@@ -60,15 +59,8 @@ namespace WebServer
             var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
             var received = await handler.ReceiveAsync(arr, SocketFlags.None);
             var request = Encoding.UTF8.GetString(buffer, 0, received);
-            new RequestHandler(request);
-        }
-
-        private async static Task SendResponse(Socket handler)
-        {
-            var message = "Hello world";
-            var encodeMessage = Encoding.UTF8.GetBytes(message);
-            await Task.Run (()=> handler.Send(encodeMessage));
-            Console.WriteLine("message sent");
+            var req = new Request(request);
+            new Response(req, handler);
         }
     }
 }
