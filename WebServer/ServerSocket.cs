@@ -29,11 +29,23 @@ namespace WebServer
             IPAddress localIpAddress = IPAddress.Parse("127.0.0.1");
             IPEndPoint endPoint = new IPEndPoint(localIpAddress, port);
             var socket = InitializeSocket(localIpAddress, endPoint);
-            var handler = await ConnectSocket(socket);
+            var handler = await socket.AcceptAsync();
             await HandleRequest(handler);
             handler.Close();
             socket.Close();
         }
+
+        //private static void CreateServerTest()
+        //{
+
+        //    var ackMessage = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, World!"; ;
+        //    var echoBytes = Encoding.UTF8.GetBytes(ackMessage);
+        //    handler.Send(echoBytes, echoBytes.Length, SocketFlags.None);
+
+
+        //    handler.Close();
+        //    socket.Close();
+        //}
 
 
 
@@ -60,7 +72,7 @@ namespace WebServer
             var received = await handler.ReceiveAsync(arr, SocketFlags.None);
             var request = Encoding.UTF8.GetString(buffer, 0, received);
             var req = new Request(request);
-            new Response(req, handler);
+       new  Response(req, handler);
         }
     }
 }

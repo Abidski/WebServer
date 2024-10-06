@@ -11,7 +11,6 @@ namespace WebServer
     internal class Request
     {
 
-        public string[] requests = new string[0];
         public string method { get; set; }
         public string uri { get; set; }
         public string version { get; set; }
@@ -26,18 +25,17 @@ namespace WebServer
 
         public void ParseRequest(string request)
         {
-            requests = request.Split(' ');
-            this.ExtractInfo();
+
+            var requestSplit = request.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+            var statusLine = requestSplit[0];
+            method = statusLine.Split(' ')[0];
+            uri = statusLine.Split(' ')[1];
+            version = statusLine.Split(' ')[2];
+
+
         }
 
-        private void ExtractInfo()
-        {
-            method = requests[0];
-            uri  = requests[1];
-            version = requests[2];
-            host = requests[3];
-            Console.WriteLine(this.ToString()); 
-        }
+
 
         public override string ToString()
         {
