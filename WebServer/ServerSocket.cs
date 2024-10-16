@@ -70,9 +70,9 @@ namespace WebServer
             var buffer = new byte[1024];
             var arr = new ArraySegment<byte>(buffer, 0, buffer.Length);
             var received = await handler.ReceiveAsync(arr, SocketFlags.None);
-            var request = Encoding.UTF8.GetString(buffer, 0, received);
+            var request = Encoding.UTF8.GetString(buffer, 0, received); 
             var req = new Request(request);
-       new  Response(req, handler);
+             new  Response(req, handler);
         }
     }
 }

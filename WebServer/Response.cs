@@ -13,12 +13,12 @@ namespace WebServer
 {
     internal class Response
     {
-        string path = Path.GetFullPath("Website");
+        string path = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.FullName + "\\WebServer\\Website";
         Byte[] responseBuffer = null;
         string statusCode;
         int contentLength;
         string contentType;
-        string body;
+        
 
 
 
@@ -43,20 +43,34 @@ namespace WebServer
             if (File.Exists(path + request.uri)||request.uri=="/")
             {
                 statusCode = "200 OK";
-                GetRoute(handler);
+                Console.WriteLine("path valid");
+                GetRoute(request,handler);
             }
             else
             {
+                
                 Console.WriteLine("Does not exist");
                 statusCode = "400 Bad Request";}
 
         }
 
-        public void GetRoute(Socket handler)
+        public void GetRoute(Request request,Socket handler)
         {
-            var response = "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nHello, World!"; ;
-            var echoBytes = Encoding.UTF8.GetBytes(response);
-            handler.Send(echoBytes, echoBytes.Length, SocketFlags.None);
+            if (request.uri.EndsWith("/") || request.uri.EndsWith("/index.html"))
+            {
+                
+                var body = File.ReadAllText(path + "\\index.html");
+                var bodyLength = Encoding.UTF8.GetBytes(body).Length;
+                var response = $"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Lenght: {bodyLength}\r\n\r\n{body}"; 
+                var echoBytes = Encoding.UTF8.GetBytes(response);
+                handler.Send(echoBytes, echoBytes.Length, SocketFlags.None);
+            } else {
+                var body = File.ReadAllText(path + request.uri);
+                var bodyLength = Encoding.UTF8.GetBytes(body).Length;
+                var response = $"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\nContent-Lenght: {bodyLength}\r\n\r\n{body}";
+                var echoBytes = Encoding.UTF8.GetBytes(response);
+                handler.Send(echoBytes, echoBytes.Length, SocketFlags.None);
+            }
         }
     }
 }
